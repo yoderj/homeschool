@@ -2,19 +2,70 @@
 <head>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
 <script>
+class ProblemStrategy {
+    constructor() {
+    }
+
+    getDisplay() {
+        return "This problem strategy doesn't have a display yet";
+    }
+
+    checkAnswer(answerText) {
+        return false;
+    }
+}
+
+class SubtractionStrategy extends ProblemStrategy {
+    #firstNumber;
+    #secondNumber;
+
+    constructor() {
+        super();
+        this.#firstNumber = randInt(2,13);
+        this.#secondNumber = randInt(Math.max(this.#firstNumber-5,0),this.#firstNumber);
+    }
+
+    getDisplay() {
+        return this.#firstNumber+" - "+this.#secondNumber;
+    }
+
+    checkAnswer(answerText) {
+        return answerText === (this.#firstNumber - this.#secondNumber).toString();
+    }
+}
+
+class AdditionStrategy extends ProblemStrategy {
+    #firstNumber;
+    #secondNumber;
+
+    constructor() {
+        super();
+        this.#firstNumber = randInt(2,10);
+        this.#secondNumber = randInt(Math.max(this.#firstNumber+2,5),13)-this.#firstNumber;
+    }
+
+    getDisplay() {
+        return  this.#firstNumber+" + "+this.#secondNumber;
+    }
+
+    checkAnswer(answerText) {
+        return answerText === (this.#firstNumber + this.#secondNumber).toString();
+    }
+}
+
+
 function randInt(beginning,end) {
     return  beginning+Math.floor(Math.random()*(end-beginning));
 }
 function newProblem() {
+    if(Math.random()>0.5) {
+       problemStrategy = new SubtractionStrategy();
+    } else {
+       problemStrategy = new AdditionStrategy();
+    }
+
     var firstNumberDiv = document.getElementById('firstNumber');
-    // Addition
-    //firstNumber = randInt(2,10);
-    //secondNumber = randInt(Math.max(firstNumber+2,5),13)-firstNumber;
-    //firstNumberDiv.textContent = firstNumber+" + "+secondNumber;
-    // Subtraction     
-    firstNumber = randInt(2,13);
-    secondNumber = randInt(Math.max(firstNumber-5,0),firstNumber);
-    firstNumberDiv.textContent = firstNumber+" - "+secondNumber;
+    firstNumberDiv.textContent = problemStrategy.getDisplay();
     console.log("New Problem: "+firstNumberDiv.textContent);
     var answerDiv = document.getElementById('answer');
     answerDiv.textContent = "";
@@ -22,7 +73,7 @@ function newProblem() {
     if(goalMet) {
         var numRightDiv = document.getElementById('numRight');
         numRightDiv.textContent = "";
-    }    
+    }
     clear();
 }
 function clear() {
@@ -30,10 +81,9 @@ function clear() {
     lastClear = d.getTime();
 }
 
+var problemStrategy;
 var numRightGoal = 30;
 
-var firstNumber;
-var secondNumber;
 var numRight = 0;
 var goalMet = false;
 var isRight = false;
@@ -59,9 +109,9 @@ document.onkeyup = function(event) {
        } else {
            clear();
            answerDiv.textContent = "";
-       }     
+       }
     } else if(event.key === "Enter") {
-	 if(!isRight) {
+     if(!isRight) {
            answer.textContent = "Keep trying!";
        } else {
            newProblem();
@@ -69,10 +119,7 @@ document.onkeyup = function(event) {
     } else {
        answerDiv.append(event.key);
     }
-//    Addition
-//    if(!isRight && answerDiv.textContent === (firstNumber + secondNumber).toString()) {
-//    Subtraction
-    if(!isRight && answerDiv.textContent === (firstNumber - secondNumber).toString()) {
+    if(!isRight && problemStrategy.checkAnswer(answerDiv.textContent)) {
         answerDiv.textContent = "You got it right!";
         numRight += 1;
         isRight = true;
@@ -95,7 +142,7 @@ document.onkeyup = function(event) {
 body {
    font-size: 2em;
    margin: 5em;
-} 
+}
 </style>
 </head>
 <body>
