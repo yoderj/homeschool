@@ -3,6 +3,9 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
 <script>
 class ProblemStrategy {
+    firstNumber;
+    secondNumber;
+
     constructor() {
     }
 
@@ -16,40 +19,44 @@ class ProblemStrategy {
 }
 
 class SubtractionStrategy extends ProblemStrategy {
-    #firstNumber;
-    #secondNumber;
-
     constructor() {
         super();
-        this.#firstNumber = randInt(2,13);
-        this.#secondNumber = randInt(Math.max(this.#firstNumber-5,0),this.#firstNumber);
+        this.firstNumber = randInt(2,13);
+        this.secondNumber = randInt(Math.max(this.firstNumber-5,0),this.firstNumber);
     }
 
     getDisplay() {
-        return this.#firstNumber+" - "+this.#secondNumber;
+        return this.firstNumber+" - "+this.secondNumber;
     }
 
     checkAnswer(answerText) {
-        return answerText === (this.#firstNumber - this.#secondNumber).toString();
+        return answerText === (this.firstNumber - this.secondNumber).toString();
     }
 }
 
 class AdditionStrategy extends ProblemStrategy {
-    #firstNumber;
-    #secondNumber;
 
     constructor() {
         super();
-        this.#firstNumber = randInt(2,10);
-        this.#secondNumber = randInt(Math.max(this.#firstNumber+2,5),13)-this.#firstNumber;
+        this.firstNumber = randInt(2,10);
+        this.secondNumber = randInt(Math.max(this.firstNumber+2,5),13)-this.firstNumber;
     }
 
     getDisplay() {
-        return  this.#firstNumber+" + "+this.#secondNumber;
+        return  this.firstNumber+" + "+this.secondNumber;
     }
 
     checkAnswer(answerText) {
-        return answerText === (this.#firstNumber + this.#secondNumber).toString();
+        return answerText === (this.firstNumber + this.secondNumber).toString();
+    }
+}
+
+
+class SillyHundredStrategy extends SubtractionStrategy {
+    constructor() {
+        super();
+        this.firstNumber = 100 * randInt(1,5);
+        this.secondNumber = this.firstNumber;
     }
 }
 
@@ -58,7 +65,9 @@ function randInt(beginning,end) {
     return  beginning+Math.floor(Math.random()*(end-beginning));
 }
 function newProblem() {
-    if(Math.random()>0.5) {
+    if(Math.random()<0.1) {
+       problemStrategy = new SillyHundredStrategy();
+    } else if(Math.random()>0.5) {
        problemStrategy = new SubtractionStrategy();
     } else {
        problemStrategy = new AdditionStrategy();
