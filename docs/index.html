@@ -210,16 +210,44 @@ document.onkeyup = function(event) {
     }
 };
 
+function purpleClick(key) {
+	console.log('Button key pressed:'+key)
+	var e = new Event('keyup');
+    e.key = key;
+    document.dispatchEvent(e);
+}
+
 </script>
 <style>
+:root {
+  --primary: purple;
+}
+
+
 * {
-   color:purple;
+   color:var(--primary);
    font-weight: bold;
 }
 body {
    font-size: 2em;
    margin: 5em;
 }
+
+.button {
+  background-color: var(--primary);
+  border: none;
+  color: white;
+  padding: 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  fond-weight: bold;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
 </style>
 </head>
 <body>
@@ -227,4 +255,25 @@ body {
 <p id="firstNumber">Something is broken. Ask Daddy for help.</p>
 <p><span id="answer"></span>&nbsp;</p>
 <p id="numRight"></p>
+
+<table>
+<tr>
+<td><button class="button" onclick="purpleClick('1')">1</button>
+<td><button class="button" onclick="purpleClick('2')">2</button>
+<td><button class="button" onclick="purpleClick('3')">3</button>
+<tr>
+<td><button class="button" onclick="purpleClick('4')">4</button>
+<td><button class="button" onclick="purpleClick('5')">5</button>
+<td><button class="button" onclick="purpleClick('6')">6</button>
+<tr>
+<td><button class="button" onclick="purpleClick('7')">7</button>
+<td><button class="button" onclick="purpleClick('8')">8</button>
+<td><button class="button" onclick="purpleClick('9')">9</button>
+<tr>
+<td><button class="button" onclick="purpleClick('0')">0</button>
+<td><button class="button" onclick="purpleClick('-')">-</button>
+<tr>
+<td><button class="button" onclick="purpleClick('Enter')">E</button>
+<td><button class="button" onclick="purpleClick('Backspace')">B</button>
+</table>
 </body>
