@@ -11,6 +11,11 @@ class ProblemStrategy {
     getDisplay() {
         return "This problem strategy doesn't have a display yet";
     }
+	
+	wasAttempt(text) {
+		return text > 0 && (text[0] >= '0' && text[0] <= '9' 
+	           || text[0] == '-') 
+	}
 
     checkAnswer(answerText) {
         return false;
@@ -18,10 +23,10 @@ class ProblemStrategy {
 }
 
 class SubtractionStrategy extends ProblemStrategy {
-    constructor() {
+    constructor(lower=2,upper=13,result_max=5,second_lower=0) {
         super();
-        this.firstNumber = randInt(2,13);
-        this.secondNumber = randInt(Math.max(this.firstNumber-5,0),this.firstNumber);
+        this.firstNumber = randInt(lower,upper);
+        this.secondNumber = randInt(Math.max(this.firstNumber-result_max,second_lower),this.firstNumber);
     }
 
     getDisplay() {
@@ -33,12 +38,50 @@ class SubtractionStrategy extends ProblemStrategy {
     }
 }
 
+
+class NegativeSubtractionStrategy extends SubtractionStrategy {
+    constructor(lower=0,upper=10,result_upper=0,result_lower=-2) {
+        super();
+        this.firstNumber = randInt(lower,upper);
+        this.secondNumber = randInt(Math.max(lower,this.firstNumber-result_upper),this.firstNumber-result_lower+1);
+    }
+}
+
+
+class SillyHundredStrategy extends SubtractionStrategy {
+    constructor(lower=2,upper=10,result_max=5,second_lower=0) {
+        super(lower, upper, result_max, second_lower);
+        this.firstNumber = 100 * this.firstNumber;
+        this.secondNumber = 100 * this.secondNumber;
+    }
+}
+
+class OneHundredAndXSubtraction extends SubtractionStrategy {
+    constructor(lower=2,upper=10,result_max=5,second_lower=0) {
+        super(lower, upper, result_max, second_lower);
+        this.firstNumber = 100 + this.firstNumber;
+        this.secondNumber = 100 + this.secondNumber;
+    }	
+}
+
+
+class XHundredAndOneSubtraction extends SubtractionStrategy {
+    constructor(lower=2,upper=10,result_max=5,second_lower=0) {
+        super(lower, upper, result_max, second_lower);
+        this.firstNumber = 100 * this.firstNumber + 1;
+        this.secondNumber = 100 * this.secondNumber + 1;
+    }	
+}
+
+
 class AdditionStrategy extends ProblemStrategy {
 
-    constructor() {
+    constructor(lower=2,upper=10,result_upper=13,result_lower=5,result_margin=2) {
         super();
-        this.firstNumber = randInt(2,10);
-        this.secondNumber = randInt(Math.max(this.firstNumber+2,5),13)-this.firstNumber;
+        this.firstNumber = randInt(lower,upper);
+        this.secondNumber = randInt(Math.max(this.firstNumber+result_margin,result_lower),
+                                             result_upper)
+                                    -this.firstNumber;
     }
 
     getDisplay() {
@@ -51,24 +94,19 @@ class AdditionStrategy extends ProblemStrategy {
 }
 
 
-class SillyHundredStrategy extends SubtractionStrategy {
-    constructor() {
-        super();
-        this.firstNumber = 100 * randInt(1,5);
-        this.secondNumber = this.firstNumber;
-    }
-}
-
-
 function randInt(beginning,end) {
     return  beginning+Math.floor(Math.random()*(end-beginning));
 }
 function newProblem() {
     if(Math.random()<0.1) {
-       problemStrategy = new SillyHundredStrategy();
+       //problemStrategy = new NegativeSubtractionStrategy();
+       problemStrategy = new SillyHundredStrategy(2,upper=10);
     } else if(Math.random()>0.5) {
        problemStrategy = new SubtractionStrategy();
+       //problemStrategy = new SillyHundredStrategy(2,upper=10);
+	   //problemStrategy = new XHundredAndOneSubtraction();
     } else {
+   	   //problemStrategy = new OneHundredAndXSubtraction();
        problemStrategy = new AdditionStrategy();
     }
 
@@ -83,22 +121,31 @@ function newProblem() {
         numRightDiv.textContent = "";
     }
     clear();
+	numAttempts = 1;
 }
 function clear() {
     var d = new Date();
     lastClear = d.getTime();
+}
+function start() {
+	startTime = new Date().getTime();
 }
 
 var problemStrategy;
 var numRightGoal = 30;
 
 var numRight = 0;
+var numRightFirstTry = 0;
+var numAttempts;
 var goalMet = false;
 var isRight = false;
 
 var lastClear;
+var startTime;
+var ppm;
 
 window.onload = function() {
+	start();
     newProblem();
 }
 
@@ -110,6 +157,12 @@ document.onkeyup = function(event) {
        var d = new Date();
        let tryClear = d.getTime();
        console.log("Time since last clear:"+(tryClear - lastClear));
+	   
+	   console.log("Was this an attempt?: "+answerDiv.textContent);
+	   if(problemStrategy.wasAttempt(answerDiv.textContent)) {
+		   numAttempts += 1;
+		   console.log("Yes.");
+	   }
 
        if((tryClear - lastClear) <2000) {
            clear();
@@ -124,17 +177,33 @@ document.onkeyup = function(event) {
        } else {
            newProblem();
        }
-    } else {
+    } else if(event.key.length == 1 && (event.key >= '0' && event.key <= '9' 
+	           || event.key == '-' )){
        answerDiv.append(event.key);
     }
     if(!isRight && problemStrategy.checkAnswer(answerDiv.textContent)) {
         answerDiv.textContent = "You got it right!";
         numRight += 1;
+		if(numAttempts == 1) {
+		    numRightFirstTry += 1;
+		}
         isRight = true;
         numRightDiv.textContent = "# right: "+((numRight-1)%numRightGoal+1);
         if(numRight > 0 && numRight % numRightGoal == 0 && !goalMet) {
-            answerDiv.textContent = "You got "+numRightGoal+" right! Good work!";
+			var endTime = new Date().getTime();
+			var totalMillis = endTime - startTime;
+			var totalMinutes = totalMillis/1000./60.;
+			ppm = (numRightGoal / totalMinutes).toLocaleString(
+					  undefined, // use the visitor's browser locale.
+					  { maximumFractionDigits: 0 }
+					);
+		    accuracy = (100 * numRightFirstTry / numRightGoal).toLocaleString(
+					  undefined, // use the visitor's browser locale.
+					  { maximumFractionDigits: 0 }
+					);
+            answerDiv.textContent = "You got "+numRightGoal+" right!  You got "+accuracy+"% right on the first try.  That's "+ppm+" problems per minute. Good work!";
             goalMet = true;
+			start();
         } else {
             goalMet = false;
         }
