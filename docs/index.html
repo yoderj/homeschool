@@ -64,6 +64,15 @@ class OneHundredAndXSubtraction extends SubtractionStrategy {
     }	
 }
 
+class OneHundredMinusXityOne extends SubtractionStrategy {
+    constructor(lower=0,upper=10,result_max=9,second_lower=0) {
+        super(lower, upper, result_max, second_lower);
+        this.secondNumber = this.firstNumber*10 + 1;
+        this.firstNumber = 100;
+    }	
+}
+
+
 
 class XHundredAndOneSubtraction extends SubtractionStrategy {
     constructor(lower=2,upper=10,result_max=5,second_lower=0) {
@@ -105,6 +114,7 @@ function newProblem() {
        problemStrategy = new SubtractionStrategy();
        //problemStrategy = new SillyHundredStrategy(2,upper=10);
 	   //problemStrategy = new XHundredAndOneSubtraction();
+	   //problemStrategy = new OneHundredMinusXityOne();
     } else {
    	   //problemStrategy = new OneHundredAndXSubtraction();
        problemStrategy = new AdditionStrategy();
@@ -132,7 +142,7 @@ function start() {
 }
 
 var problemStrategy;
-var numRightGoal = 30;
+var numRightGoal = 15;//30;
 
 var numRight = 0;
 var numRightFirstTry = 0;
@@ -237,7 +247,7 @@ body {
   background-color: var(--primary);
   border: none;
   color: white;
-  padding: 20px;
+  padding: 30px;
   text-align: center;
   text-decoration: none;
   display: inline-block;
@@ -246,6 +256,12 @@ body {
   margin: 4px 2px;
   cursor: pointer;
   border-radius: 8px;
+}
+
+@media only screen and (min-width: 500px) {
+  .button {
+    display: none;
+  }
 }
 
 </style>
