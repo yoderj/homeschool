@@ -138,6 +138,7 @@ function clear() {
     lastClear = d.getTime();
 }
 function start() {
+	numRightFirstTry = 0;
 	startTime = new Date().getTime();
 }
 
@@ -145,7 +146,7 @@ var problemStrategy;
 var numRightGoal = 15;//30;
 
 var numRight = 0;
-var numRightFirstTry = 0;
+var numRightFirstTry;
 var numAttempts;
 var goalMet = false;
 var isRight = false;
