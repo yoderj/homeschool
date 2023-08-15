@@ -1,5 +1,5 @@
 # homeschool
-A simple arithmetic-practice standalone page
+A simple arithmetic-practice standalone page. [Try it out hosted on Github Pages](https://yoderj.github.io/homeschool/) or on your own machine. Everything runs in the browser, so nothing leaves your computer -- thus there are no privacy concerns.
 
 Simply open the HTML file in the browser of your choice.
 
