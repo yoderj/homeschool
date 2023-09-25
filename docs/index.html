@@ -11,11 +11,11 @@ class ProblemStrategy {
     getDisplay() {
         return "This problem strategy doesn't have a display yet";
     }
-	
-	wasAttempt(text) {
-		return text > 0 && (text[0] >= '0' && text[0] <= '9' 
-	           || text[0] == '-') 
-	}
+    
+    wasAttempt(text) {
+        return text > 0 && (text[0] >= '0' && text[0] <= '9' 
+               || text[0] == '-') 
+    }
 
     checkAnswer(answerText) {
         return false;
@@ -61,7 +61,7 @@ class OneHundredAndXSubtraction extends SubtractionStrategy {
         super(lower, upper, result_max, second_lower);
         this.firstNumber = 100 + this.firstNumber;
         this.secondNumber = 100 + this.secondNumber;
-    }	
+    }   
 }
 
 class OneHundredMinusXityOne extends SubtractionStrategy {
@@ -69,7 +69,7 @@ class OneHundredMinusXityOne extends SubtractionStrategy {
         super(lower, upper, result_max, second_lower);
         this.secondNumber = this.firstNumber*10 + 1;
         this.firstNumber = 100;
-    }	
+    }   
 }
 
 
@@ -79,7 +79,7 @@ class XHundredAndOneSubtraction extends SubtractionStrategy {
         super(lower, upper, result_max, second_lower);
         this.firstNumber = 100 * this.firstNumber + 1;
         this.secondNumber = 100 * this.secondNumber + 1;
-    }	
+    }   
 }
 
 
@@ -113,10 +113,10 @@ function newProblem() {
     } else if(Math.random()>0.5) {
        problemStrategy = new SubtractionStrategy();
        //problemStrategy = new SillyHundredStrategy(2,upper=10);
-	   //problemStrategy = new XHundredAndOneSubtraction();
-	   //problemStrategy = new OneHundredMinusXityOne();
+       //problemStrategy = new XHundredAndOneSubtraction();
+       //problemStrategy = new OneHundredMinusXityOne();
     } else {
-   	   //problemStrategy = new OneHundredAndXSubtraction();
+       //problemStrategy = new OneHundredAndXSubtraction();
        problemStrategy = new AdditionStrategy();
     }
 
@@ -131,15 +131,15 @@ function newProblem() {
         numRightDiv.textContent = "";
     }
     clear();
-	numAttempts = 1;
+    numAttempts = 1;
 }
 function clear() {
     var d = new Date();
     lastClear = d.getTime();
 }
 function start() {
-	numRightFirstTry = 0;
-	startTime = new Date().getTime();
+    numRightFirstTry = 0;
+    startTime = new Date().getTime();
 }
 
 var problemStrategy;
@@ -156,7 +156,7 @@ var startTime;
 var ppm;
 
 window.onload = function() {
-	start();
+    start();
     newProblem();
 }
 
@@ -168,12 +168,12 @@ document.onkeyup = function(event) {
        var d = new Date();
        let tryClear = d.getTime();
        console.log("Time since last clear:"+(tryClear - lastClear));
-	   
-	   console.log("Was this an attempt?: "+answerDiv.textContent);
-	   if(problemStrategy.wasAttempt(answerDiv.textContent)) {
-		   numAttempts += 1;
-		   console.log("Yes.");
-	   }
+       
+       console.log("Was this an attempt?: "+answerDiv.textContent);
+       if(problemStrategy.wasAttempt(answerDiv.textContent)) {
+           numAttempts += 1;
+           console.log("Yes.");
+       }
 
        if((tryClear - lastClear) <2000) {
            clear();
@@ -189,32 +189,32 @@ document.onkeyup = function(event) {
            newProblem();
        }
     } else if(event.key.length == 1 && (event.key >= '0' && event.key <= '9' 
-	           || event.key == '-' )){
+               || event.key == '-' )){
        answerDiv.append(event.key);
     }
     if(!isRight && problemStrategy.checkAnswer(answerDiv.textContent)) {
         answerDiv.textContent = "You got it right!";
         numRight += 1;
-		if(numAttempts == 1) {
-		    numRightFirstTry += 1;
-		}
+        if(numAttempts == 1) {
+            numRightFirstTry += 1;
+        }
         isRight = true;
         numRightDiv.textContent = "# right: "+((numRight-1)%numRightGoal+1);
         if(numRight > 0 && numRight % numRightGoal == 0 && !goalMet) {
-			var endTime = new Date().getTime();
-			var totalMillis = endTime - startTime;
-			var totalMinutes = totalMillis/1000./60.;
-			ppm = (numRightGoal / totalMinutes).toLocaleString(
-					  undefined, // use the visitor's browser locale.
-					  { maximumFractionDigits: 0 }
-					);
-		    accuracy = (100 * numRightFirstTry / numRightGoal).toLocaleString(
-					  undefined, // use the visitor's browser locale.
-					  { maximumFractionDigits: 0 }
-					);
+            var endTime = new Date().getTime();
+            var totalMillis = endTime - startTime;
+            var totalMinutes = totalMillis/1000./60.;
+            ppm = (numRightGoal / totalMinutes).toLocaleString(
+                      undefined, // use the visitor's browser locale.
+                      { maximumFractionDigits: 0 }
+                    );
+            accuracy = (100 * numRightFirstTry / numRightGoal).toLocaleString(
+                      undefined, // use the visitor's browser locale.
+                      { maximumFractionDigits: 0 }
+                    );
             answerDiv.textContent = "You got "+numRightGoal+" right!  You got "+accuracy+"% right on the first try.  That's "+ppm+" problems per minute. Good work!";
             goalMet = true;
-			start();
+            start();
         } else {
             goalMet = false;
         }
@@ -222,8 +222,8 @@ document.onkeyup = function(event) {
 };
 
 function purpleClick(key) {
-	console.log('Button key pressed:'+key)
-	var e = new Event('keyup');
+    console.log('Button key pressed:'+key)
+    var e = new Event('keyup');
     e.key = key;
     document.dispatchEvent(e);
 }
