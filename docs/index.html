@@ -20,7 +20,47 @@ class ProblemStrategy {
     checkAnswer(answerText) {
         return false;
     }
+    
+    isValidKey(key) {
+        return key.length == 1 && (key >= '0' && key <= '9' 
+               || key == '-'); 
+    }
 }
+
+class SillyStoryStrategy extends ProblemStrategy {
+    static story = "";
+
+    constructor() {
+        super();
+    }
+
+    getDisplay() {
+        var starting = ""
+        var modifier = "a"
+        if(SillyStoryStrategy.story.length > 0){
+            starting = "Your story so far: " + SillyStoryStrategy.story + ". "
+            modifier = "your"
+        }
+        return starting+"Write one word for "+modifier+" story. You can write any word you want. End by typing the space key.  Later, you will get to extend the story."
+    }
+    
+    wasAttempt(text) {
+        return false; 
+    }
+
+    checkAnswer(answerText) {
+        var wordComplete = answerText[answerText.length - 1] == " ";
+        if(wordComplete) {
+            SillyStoryStrategy.story += answerText
+        }
+        return wordComplete
+    }
+
+    isValidKey(key) {
+        return true;
+    }
+}
+
 
 class SubtractionStrategy extends ProblemStrategy {
     constructor(lower=2,upper=13,result_max=5,second_lower=0) {
@@ -107,7 +147,9 @@ function randInt(beginning,end) {
     return  beginning+Math.floor(Math.random()*(end-beginning));
 }
 function newProblem() {
-    if(Math.random()<0.1) {
+    if(Math.random()<0.3333) {
+       problemStrategy = new SillyStoryStrategy();
+    } else if(Math.random()<0.1) {
        //problemStrategy = new NegativeSubtractionStrategy();
        problemStrategy = new SillyHundredStrategy(2,upper=10);
     } else if(Math.random()>0.5) {
@@ -160,6 +202,13 @@ window.onload = function() {
     newProblem();
 }
 
+function countAttempts(answerText) {
+   if(problemStrategy.wasAttempt(answerText)) {
+       numAttempts += 1;
+       console.log("Yes.");
+   }
+}
+
 document.onkeyup = function(event) {
     console.log("key:"+event.key);
     var answerDiv = document.getElementById('answer');
@@ -169,11 +218,7 @@ document.onkeyup = function(event) {
        let tryClear = d.getTime();
        console.log("Time since last clear:"+(tryClear - lastClear));
        
-       console.log("Was this an attempt?: "+answerDiv.textContent);
-       if(problemStrategy.wasAttempt(answerDiv.textContent)) {
-           numAttempts += 1;
-           console.log("Yes.");
-       }
+       countAttempts(answerDiv.textContent);
 
        if((tryClear - lastClear) <2000) {
            clear();
@@ -184,12 +229,12 @@ document.onkeyup = function(event) {
        }
     } else if(event.key === "Enter") {
      if(!isRight) {
+           countAttempts(answerDiv.textContent);
            answer.textContent = "Keep trying!";
        } else {
            newProblem();
        }
-    } else if(event.key.length == 1 && (event.key >= '0' && event.key <= '9' 
-               || event.key == '-' )){
+    } else if(problemStrategy.isValidKey(event.key)){
        answerDiv.append(event.key);
     }
     if(!isRight && problemStrategy.checkAnswer(answerDiv.textContent)) {
